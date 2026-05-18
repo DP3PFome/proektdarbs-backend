@@ -13,7 +13,7 @@ class ItemController extends Controller
 
 public function index($collection)
 {
-    return Item::where('collection_id', $collection)->with('tags')->get();
+    return response()->json(Item::where('collection_id', $collection)->with('tags')->get());
 }
 
     public function store(Request $request)

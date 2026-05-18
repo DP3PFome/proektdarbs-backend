@@ -18,8 +18,7 @@ public function index(Request $request)
         $query->where('title', 'LIKE', '%'.$request->search.'%');
     }
 
-    return $query->get();
-
+    return response()->json($query->get());
 }
 
     public function store(Request $request)

@@ -7,28 +7,40 @@ use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StatsController;
 
-// Auth routes
+// Health check endpoint
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
+});
+
+// Auth routes (public)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+// Stats routes (public)
 Route::get('/stats', [StatsController::class, 'index']);
 
-// Public routes
-Route::get('/collections', [CollectionController::class,'index']);
+// Public collection routes
+Route::get('/collections', [CollectionController::class, 'index']);
 
-// Protected routes
+// Protected routes (require authentication)
 Route::middleware('auth:sanctum')->group(function () {
+    // User routes
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        return response()->json($request->user());
     });
-    Route::post('/collections', [CollectionController::class,'store']);
-    Route::put('/collections/{id}', [CollectionController::class,'update']);
-    Route::delete('/collections/{id}', [CollectionController::class,'destroy']);
+    
     Route::patch('/user', [AuthController::class, 'update']);
     Route::put('/user/profile', [AuthController::class, 'updateProfile']);
 
-    Route::get('/items/{collection}', [ItemController::class,'index']);
-    Route::post('/items', [ItemController::class,'store']);
-    Route::put('/items/{id}', [ItemController::class,'update']);
-    Route::delete('/items/{id}', [ItemController::class,'destroy']);
+    // Collection routes
+    Route::post('/collections', [CollectionController::class, 'store']);
+    Route::put('/collections/{id}', [CollectionController::class, 'update']);
+    Route::delete('/collections/{id}', [CollectionController::class, 'destroy']);
+
+    // Item routes
+    Route::get('/items/{collection}', [ItemController::class, 'index']);
+    Route::post('/items', [ItemController::class, 'store']);
+    Route::put('/items/{id}', [ItemController::class, 'update']);
+    Route::delete('/items/{id}', [ItemController::class, 'destroy']);
 });
+
