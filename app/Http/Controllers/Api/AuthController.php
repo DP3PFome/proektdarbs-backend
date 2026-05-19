@@ -31,7 +31,8 @@ class AuthController extends Controller
 }
 
 
-    public function login(Request $request)
+
+   public function login(Request $request)
 {
     $validated = $request->validate([
         'email' => ['required', 'email'],
@@ -51,6 +52,7 @@ class AuthController extends Controller
         'user' => $user,
     ]);
 }
+
 
 
     public function update(Request $request)
