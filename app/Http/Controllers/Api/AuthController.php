@@ -10,52 +10,48 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'min:2', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:6'],
-        ]);
+   public function register(Request $request)
+{
+    $validated = $request->validate([
+        'name' => ['required', 'string', 'min:2', 'max:255'],
+        'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+        'password' => ['required', 'string', 'min:6'],
+    ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => strtolower($validated['email']),
-            'password' => Hash::make($validated['password']),
-        ]);
+    $user = User::create([
+        'name' => $validated['name'],
+        'email' => strtolower($validated['email']),
+        'password' => Hash::make($validated['password']),
+    ]);
 
-        $token = $user->createToken('API Token')->plainTextToken;
+    return response()->json([
+        'message' => 'Lietotājs izveidots',
+        'user' => $user,
+    ], 201);
+}
 
-        return response()->json([
-            'message' => 'Lietotājs izveidots',
-            'user' => $user,
-            'token' => $token,
-        ], 201);
-    }
 
     public function login(Request $request)
-    {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+{
+    $validated = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required', 'string'],
+    ]);
 
-        $user = User::where('email', strtolower($validated['email']))->first();
+    $user = User::where('email', strtolower($validated['email']))->first();
 
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['Nepareizs email vai parole'],
-            ]);
-        }
-
-        $token = $user->createToken('API Token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Ienākšana veiksmīga',
-            'user' => $user,
-            'token' => $token,
+    if (!$user || !Hash::check($validated['password'], $user->password)) {
+        throw ValidationException::withMessages([
+            'email' => ['Nepareizs email vai parole'],
         ]);
     }
+
+    return response()->json([
+        'message' => 'Ienākšana veiksmīga',
+        'user' => $user,
+    ]);
+}
+
 
     public function update(Request $request)
     {
