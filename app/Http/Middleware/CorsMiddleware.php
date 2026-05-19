@@ -8,21 +8,22 @@ class CorsMiddleware
 {
     public function handle($request, Closure $next)
     {
-        $response = $next($request);
-
-        $response->headers->set('Access-Control-Allow-Origin', 'https://proektdarbs-gu5k.vercel.app');
-        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        $origin = 'https://proektdarbs-gu5k.vercel.app';
 
         if ($request->getMethod() === 'OPTIONS') {
             return response('', 200)
-                ->header('Access-Control-Allow-Origin', 'https://proektdarbs-gu5k.vercel.app')
+                ->header('Access-Control-Allow-Origin', $origin)
                 ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
                 ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
                 ->header('Access-Control-Allow-Credentials', 'true');
         }
 
-        return $response;
+        $response = $next($request);
+
+        return $response
+            ->header('Access-Control-Allow-Origin', $origin)
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+            ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+            ->header('Access-Control-Allow-Credentials', 'true');
     }
 }

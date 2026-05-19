@@ -11,11 +11,17 @@ return Application::configure(basePath: dirname(__DIR__))
     commands: __DIR__.'/../routes/console.php',
 )
 
-    ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->api(prepend: [
-            \App\Http\Middleware\CorsMiddleware::class,
-        ]);
-    })
+    ->withMiddleware(function (Middleware $middleware) {
+
+    // GLOBAL middleware (работает для всех запросов)
+    $middleware->append(\App\Http\Middleware\CorsMiddleware::class);
+
+    // API middleware (если нужно)
+    $middleware->api(prepend: [
+        \App\Http\Middleware\CorsMiddleware::class,
+    ]);
+})
+
     ->withExceptions(function (Exceptions $exceptions): void {
         // Return JSON for API errors
         $exceptions->render(function (Throwable $e, $request) {
