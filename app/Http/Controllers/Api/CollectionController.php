@@ -12,7 +12,7 @@ class CollectionController extends Controller
 
 public function index(Request $request)
 {
-    $query = Collection::with(['tags', 'items', 'user'])->withCount('items');
+    $query = Collection::with(['items', 'user'])->withCount('items');
 
     if ($request->search) {
         $query->where('title', 'LIKE', '%'.$request->search.'%');
@@ -25,9 +25,7 @@ public function index(Request $request)
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|max:50'
+            'description' => 'nullable|string'
         ]);
 
         $collection = Collection::create([
@@ -36,16 +34,7 @@ public function index(Request $request)
             'description' => $request->description
         ]);
 
-        if ($request->tags) {
-            $tagIds = [];
-            foreach ($request->tags as $tagName) {
-                $tag = \App\Models\Tag::firstOrCreate(['name' => $tagName]);
-                $tagIds[] = $tag->id;
-            }
-            $collection->tags()->attach($tagIds);
-        }
-
-        return response()->json($collection->load(['tags', 'items', 'user'])->loadCount('items'));
+        return response()->json($collection->load(['items', 'user'])->loadCount('items'));
     }
 
     public function update(Request $request,$id)
@@ -58,9 +47,7 @@ public function index(Request $request)
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|max:50'
+            'description' => 'nullable|string'
         ]);
 
         $collection->update([
@@ -68,16 +55,7 @@ public function index(Request $request)
             'description' => $request->description
         ]);
 
-        if ($request->has('tags')) {
-            $tagIds = [];
-            foreach ($request->tags as $tagName) {
-                $tag = \App\Models\Tag::firstOrCreate(['name' => $tagName]);
-                $tagIds[] = $tag->id;
-            }
-            $collection->tags()->sync($tagIds);
-        }
-
-        return response()->json($collection->load(['tags', 'items', 'user'])->loadCount('items'));
+        return response()->json($collection->load(['items', 'user'])->loadCount('items'));
     }
 
     public function destroy($id)
