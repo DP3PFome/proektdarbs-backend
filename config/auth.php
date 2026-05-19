@@ -41,6 +41,12 @@ return [
             'provider' => 'users',
         ],
 
+        'api' => [
+            'driver' => 'token',
+            'provider' => 'users',
+            'hash' => false,
+        ],
+
         // 'sanctum' guard removed because Sanctum package is not installed
     ],
 
