@@ -16,13 +16,11 @@ class CorsMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $allowedOrigins = [
-            'http://localhost:5173',
-            'http://localhost:3000',
-            'http://127.0.0.1:5173',
-            'http://127.0.0.1:3000',
-            env('FRONTEND_URL', 'http://localhost:5173'),
-        ];
+        $allowedOrigins = array_filter([
+            env('FRONTEND_URL'),
+            env('FRONTEND_URL_LOCAL'),
+            env('FRONTEND_URL_LOCAL_127'),
+        ]);
 
         $origin = $request->header('Origin');
         $isAllowedOrigin = in_array($origin, $allowedOrigins) || 
