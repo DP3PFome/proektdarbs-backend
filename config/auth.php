@@ -41,10 +41,7 @@ return [
             'provider' => 'users',
         ],
 
-        'sanctum' => [
-            'driver' => 'sanctum',
-            'provider' => null,
-        ],
+        // 'sanctum' guard removed because Sanctum package is not installed
     ],
 
     /*

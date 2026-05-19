@@ -23,7 +23,7 @@ Route::get('/stats', [StatsController::class, 'index']);
 Route::get('/collections', [CollectionController::class, 'index']);
 
 // Protected routes (require authentication)
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth')->group(function () {
     // User routes
     Route::get('/user', function (Request $request) {
         return response()->json($request->user());
