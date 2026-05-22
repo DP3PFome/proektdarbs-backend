@@ -56,38 +56,46 @@ public function index($collection)
         return response()->json($item->load('tags'));
     }
 
-    public function update(Request $request,$id)
-    {
-        $item = Item::findOrFail($id);
+    public function update(Request $request, $id)
+{
+    $item = Item::findOrFail($id);
 
-        $collection = $item->collection;
-        if ($collection->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|max:50'
-        ]);
-
-        $item->update([
-            'name' => $request->name,
-            'description' => $request->description
-        ]);
-
-        if ($request->has('tags')) {
-            $tagIds = [];
-            foreach ($request->tags as $tagName) {
-                $tag = \App\Models\Tag::firstOrCreate(['name' => $tagName]);
-                $tagIds[] = $tag->id;
-            }
-            $item->tags()->sync($tagIds);
-        }
-
-        return response()->json($item->load('tags'));
+    $collection = $item->collection;
+    if ($collection->user_id !== Auth::id()) {
+        return response()->json(['error' => 'Unauthorized'], 403);
     }
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'tags' => 'nullable|array',
+        'tags.*' => 'string|max:50',
+        'image' => 'nullable|image|max:2048'
+    ]);
+
+    $item->update([
+        'name' => $request->name,
+        'description' => $request->description
+    ]);
+
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('items', 'public');
+        $item->image = $path;
+        $item->save();
+    }
+
+    if ($request->has('tags')) {
+        $tagIds = [];
+        foreach ($request->tags as $tagName) {
+            $tag = \App\Models\Tag::firstOrCreate(['name' => $tagName]);
+            $tagIds[] = $tag->id;
+        }
+        $item->tags()->sync($tagIds);
+    }
+
+    return response()->json($item->load('tags'));
+}
+
 
     public function destroy($id)
     {
